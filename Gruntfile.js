@@ -23,9 +23,9 @@ module.exports = function(grunt) {
           'public/js/pitchClassMapping.js': ['source_js/pitchClassMapping.js'],
           'public/js/hexcolorUtil.js': ['source_js/hexcolorUtil.js'],
           'public/js/shapes.js': ['source_js/shapes.js'],
-            'public/js/gameModel.js': ['source_js/gameModel.js'],
-            'public/js/musicHandler.js': ['source_js/musicHandler.js'],
-            'public/js/musicGen.js': ['source_js/musicGen.js']
+          'public/js/gameModel.js': ['source_js/gameModel.js'],
+          'public/js/musicHandler.js': ['source_js/musicHandler.js'],
+          'public/js/musicGen.js': ['source_js/musicGen.js']
         } //files
       } //my_target
     }, //uglify
