@@ -100,6 +100,8 @@ function GameModel(piano) {
             if (targetsEmpty()) {
                 var chord = nextChord();
                 musicBox.playChord(chord);
+                piano.setKeysNormal();
+                piano.setKeysNotice(chord);
                 chord.forEach(function(note) {
                     spawnTarget(world, note);
                 })

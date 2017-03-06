@@ -25,13 +25,10 @@ function MusicBox() {
     var beatCount = 0;
 
     var melodyQueue = [];
+    var currentChord = null;
     // music playing logic
     this.playChord = function(chord) {
-        bass.allNoteOff();
-        melodyQueue = [];
-        chord.forEach(function(noteClass) {
-            bass.noteOn(noteClass + 48, 60);
-        })
+        currentChord = chord;
     };
 
     this.playMelody = function(melody) {
@@ -45,7 +42,19 @@ function MusicBox() {
     this.onBeat = function() {
         beatCount++;
         if (melodyQueue.length > 0)
-            synth.noteOn(melodyQueue.pop(), 100);
+            synth.noteOn(melodyQueue.pop(), 80);
         console.log(beatCount);
+
+        if (beatCount % 4 == 0)
+            this.onBeat4();
+    };
+
+    this.onBeat4 = function() {
+        if (!currentChord) return;
+        bass.allNoteOff();
+        melodyQueue = [];
+        currentChord.forEach(function(noteClass) {
+            bass.noteOn(noteClass + 48, 60);
+        })
     }
 }
