@@ -22,13 +22,16 @@ bassEffect = T("reverb", {room:0.95, damp:0.1, mix:0.75}, bassEffect);
 bassEffect.play();
 
 function MusicBox() {
-    var beatCount = 0;
+    var beatCount = -1;
 
     var melodyQueue = [];
     var currentChord = null;
+
+    var currentCallback = null;
     // music playing logic
-    this.playChord = function(chord) {
+    this.playChord = function(chord, switchCallback) {
         currentChord = chord;
+        currentCallback = switchCallback;
     };
 
     this.playMelody = function(melody) {
@@ -39,7 +42,7 @@ function MusicBox() {
 
     };
 
-    this.onBeat = function() {
+    this.nextBeat = function() {
         beatCount++;
         if (melodyQueue.length > 0)
             synth.noteOn(melodyQueue.pop(), 80);
@@ -49,12 +52,29 @@ function MusicBox() {
             this.onBeat4();
     };
 
+    this.waitingForChordToStart = function() {
+        return currentCallback != null;
+    };
+
+    var beat4Listener = null;
     this.onBeat4 = function() {
         if (!currentChord) return;
         bass.allNoteOff();
-        melodyQueue = [];
         currentChord.forEach(function(noteClass) {
             bass.noteOn(noteClass + 48, 60);
-        })
+            if (currentCallback && beatCount % 8 == 0) {
+                melodyQueue = [];
+                currentCallback();
+                currentCallback = null;
+            }
+        });
+
+        beat4Listener && beat4Listener();
+
+    };
+
+    this.registerBeat4Listener = function(callback) {
+        console.log(callback);
+        beat4Listener = callback;
     }
 }
