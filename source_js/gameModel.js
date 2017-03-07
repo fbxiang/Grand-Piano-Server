@@ -1,5 +1,5 @@
 
-function GameModel(piano) {
+function GameModel(piano, world) {
 
     var tempo;
     function setTempo(bpm) {
@@ -97,12 +97,15 @@ function GameModel(piano) {
                 }
             }
 
-            if (targetsEmpty()) {
-                var chord = nextChord();
-                musicBox.playChord(chord);
-                chord.forEach(function(note) {
-                    spawnTarget(world, note);
-                })
+            if (targetsEmpty() && !musicBox.waitingForChordToStart()) {
+                const chord = nextChord();
+                musicBox.playChord(chord, function() {
+                    piano.setKeysNormal();
+                    piano.setKeysNotice(chord);
+                    chord.forEach(function(note) {
+                        spawnTarget(world, note);
+                    })
+                });
             }
 
         }
@@ -111,39 +114,41 @@ function GameModel(piano) {
         if (timeInBeat > 60000 / tempo) {
             timeInBeat -= 60000 / tempo;
 
-            musicBox.onBeat();
+            musicBox.nextBeat();
+        }
+    }
 
-            for (var i = 0; i < 13; i++) {
-                for (var j = 0; j < targets[i].length; j++) {
-                    var pos = targets[i][j].body.state.pos;
-                    var style = targets[i][j].body.styles.fillStyle;
-                    var velY = targets[i][j].body.state.vel.y;
+    musicBox.registerBeat4Listener(function() {
+        for (var i = 0; i < targets.length; i++) {
+            for (var j = 0; j < targets[i].length; j++) {2
+                var pos = targets[i][j].body.state.pos;
+                var style = targets[i][j].body.styles.fillStyle;
+                var velY = targets[i][j].body.state.vel.y;
 
-                    for (var k = 0; k < 10; k++) {
-                        var particle = Physics.body('rectangle', {
-                            x: pos.x
-                            ,y: pos.y
-                            ,width: 10
-                            ,height: 10
-                            ,styles: {
-                                fillStyle: style
-                            }
-                            ,treatment: 'kinematic'
-                            ,angle: Math.random() * 2 * Math.PI
-                            ,despawn: true
-                            ,collision: false
-                            ,life: Math.random() * 1000
-                        });
+                for (var k = 0; k < 10; k++) {
+                    var particle = Physics.body('rectangle', {
+                        x: pos.x
+                        ,y: pos.y
+                        ,width: 10
+                        ,height: 10
+                        ,styles: {
+                            fillStyle: style
+                        }
+                        ,treatment: 'kinematic'
+                        ,angle: Math.random() * 2 * Math.PI
+                        ,despawn: true
+                        ,collision: false
+                        ,life: Math.random() * 1000
+                    });
 
-                        particle.state.vel.x = (Math.random() - 0.5) / 4;
-                        particle.state.vel.y = (Math.random()-0.5) / 2 + velY;
-                        world.add(particle);
-                    }
+                    particle.state.vel.x = (Math.random() - 0.5) / 4;
+                    particle.state.vel.y = (Math.random()-0.5) / 2 + velY;
+                    world.add(particle);
                 }
             }
         }
+    });
 
-    }
     this.update = update;
 }
 
