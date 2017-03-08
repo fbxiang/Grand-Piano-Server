@@ -1,23 +1,12 @@
 
-var env   = T("adsr", {a:0, d:1000, s:0, r:600});
-
-var env = T("perc", {r:1000});
-var synth = T("SynthDef", {mul:0.45, poly:4});
-synth.def = function(opts) {
-    var op1 = T("sin", {freq:opts.freq*6, fb:0.25, mul:0.4});
-    var op2 = T("sin", {freq:opts.freq, phase:op1, mul:0.4});
-    return env.clone().append(op2).on("ended", opts.doneAction).bang();
-};
-synth.play();
-
-function GameModel(piano) {
+function GameModel(piano, world) {
 
     var tempo;
     function setTempo(bpm) {
         tempo = bpm;
     }
 
-    setTempo(160);
+    setTempo(200);
 
     var timeInBeat = 0;
 
@@ -84,7 +73,8 @@ function GameModel(piano) {
                 targetBody.life = 0;
                 var pos = targetBody.state.pos;
 
-                nextMelody();
+                var melody = nextMelody();
+                musicBox.playMelody(melody);
 
                 for (var i = 0; i < 8; i++) {
                     var particle = Physics.body('rectangle', {
@@ -108,11 +98,15 @@ function GameModel(piano) {
                 }
             }
 
-            if (targetsEmpty()) {
-                var chord = nextChord();
-                chord.forEach(function(note) {
-                    spawnTarget(world, note);
-                })
+            if (targetsEmpty() && !musicBox.waitingForChordToStart()) {
+                const chord = nextChord();
+                musicBox.playChord(chord, function() {
+                    piano.setKeysNormal();
+                    piano.setKeysNotice(chord);
+                    chord.forEach(function(note) {
+                        spawnTarget(world, note);
+                    })
+                });
             }
 
         }
@@ -121,39 +115,41 @@ function GameModel(piano) {
         if (timeInBeat > 60000 / tempo) {
             timeInBeat -= 60000 / tempo;
 
-            musicBox.onBeat();
+            musicBox.nextBeat();
+        }
+    }
 
-            for (var i = 0; i < 13; i++) {
-                for (var j = 0; j < targets[i].length; j++) {
-                    var pos = targets[i][j].body.state.pos;
-                    var style = targets[i][j].body.styles.fillStyle;
-                    var velY = targets[i][j].body.state.vel.y;
+    musicBox.registerBeat4Listener(function() {
+        for (var i = 0; i < targets.length; i++) {
+            for (var j = 0; j < targets[i].length; j++) {2
+                var pos = targets[i][j].body.state.pos;
+                var style = targets[i][j].body.styles.fillStyle;
+                var velY = targets[i][j].body.state.vel.y;
 
-                    for (var k = 0; k < 10; k++) {
-                        var particle = Physics.body('rectangle', {
-                            x: pos.x
-                            ,y: pos.y
-                            ,width: 10
-                            ,height: 10
-                            ,styles: {
-                                fillStyle: style
-                            }
-                            ,treatment: 'kinematic'
-                            ,angle: Math.random() * 2 * Math.PI
-                            ,despawn: true
-                            ,collision: false
-                            ,life: Math.random() * 1000
-                        });
+                for (var k = 0; k < 10; k++) {
+                    var particle = Physics.body('rectangle', {
+                        x: pos.x
+                        ,y: pos.y
+                        ,width: 10
+                        ,height: 10
+                        ,styles: {
+                            fillStyle: style
+                        }
+                        ,treatment: 'kinematic'
+                        ,angle: Math.random() * 2 * Math.PI
+                        ,despawn: true
+                        ,collision: false
+                        ,life: Math.random() * 1000
+                    });
 
-                        particle.state.vel.x = (Math.random() - 0.5) / 4;
-                        particle.state.vel.y = (Math.random()-0.5) / 2 + velY;
-                        world.add(particle);
-                    }
+                    particle.state.vel.x = (Math.random() - 0.5) / 4;
+                    particle.state.vel.y = (Math.random()-0.5) / 2 + velY;
+                    world.add(particle);
                 }
             }
         }
+    });
 
-    }
     this.update = update;
 }
 

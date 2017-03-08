@@ -76,7 +76,7 @@ var physicsEngine = Physics(function (world) {
     piano.setDimension(S(200), S(100));
     piano.setPosition(width / 2, height - 150);
 
-    var gameModel = new GameModel(piano);
+    var gameModel = new GameModel(piano, world);
 
     ///////////////////////////////////////////////////PHYSICS////////////////////////////////////////////////////////////
     // Plz give me a number > 3
