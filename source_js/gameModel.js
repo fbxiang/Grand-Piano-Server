@@ -14,6 +14,7 @@ function GameModel(piano, world) {
 
     var musicBox = new MusicBox();
     var musicGen = new MusicGen();
+    var lights = new Lights();
 
     function nextChord() {
         return musicGen.popNextChord();
@@ -75,6 +76,9 @@ function GameModel(piano, world) {
                 var melody = nextMelody();
                 musicBox.playMelody(melody);
 
+                // pulse the lights
+                lights.pulse();
+
                 for (var i = 0; i < 8; i++) {
                     var particle = Physics.body('rectangle', {
                         x: pos.x
@@ -105,6 +109,9 @@ function GameModel(piano, world) {
                     chord.forEach(function(note) {
                         spawnTarget(world, note);
                     })
+
+                    // new chord new light color
+                    lights.setRandomRGB();
                 });
             }
 

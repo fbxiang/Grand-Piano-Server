@@ -1,10 +1,5 @@
-/* global PitchClassMapping */
-
-// $(document).ready(function () {
-//    var ws = new WebSocket('ws://localhost:1234', 'echo-protocol');
-// });
-
 // global variables
+var ws = new WebSocket('ws://aurora.local:7446', 'nlcp');
 var zero_ang_vel = 0.001;
 var num_sides = 3;
 var width = window.innerWidth
@@ -179,11 +174,11 @@ var physicsEngine = Physics(function (world) {
             , lineWidth: 1
             , strokeStyle: '#ffffff'
         }
-        ,children: regularPolygon(6, 100)
+        ,children: regularPolygon(6, 60)
     });
     console.log(zero);
 
-    world.add(zero);
+    // world.add(zero);
 
     // add some gravity
     var gravity = Physics.behavior('constant-acceleration', {
@@ -233,7 +228,7 @@ var physicsEngine = Physics(function (world) {
     // subscribe to ticker to advance the simulation
     Physics.util.ticker.on(function (time) {
         world.step(time);
-        world.findOne({ 'treatment': 'kinematic' }).state.angular.vel = zero_ang_vel;
+        // world.findOne({ 'treatment': 'kinematic' }).state.angular.vel = zero_ang_vel;
 
         if (!laskTick) {
             laskTick = time;
