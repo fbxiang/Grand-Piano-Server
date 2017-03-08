@@ -18,6 +18,6 @@ function MusicBox() {
 
     this.onBeat = function() {
         beatCount++;
-        // console.log(beatCount);
+        console.log(beatCount);
     }
 }

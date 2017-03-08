@@ -25,7 +25,8 @@ module.exports = function(grunt) {
           'public/js/shapes.js': ['source_js/shapes.js'],
           'public/js/gameModel.js': ['source_js/gameModel.js'],
           'public/js/musicHandler.js': ['source_js/musicHandler.js'],
-          'public/js/musicGen.js': ['source_js/musicGen.js']
+          'public/js/musicGen.js': ['source_js/musicGen.js'],
+          'public/js/lightsHandler.js': ['source_js/lightsHandler.js']
         } //files
       } //my_target
     }, //uglify

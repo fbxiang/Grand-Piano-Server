@@ -25,6 +25,7 @@ function GameModel(piano) {
 
     var musicBox = new MusicBox();
     var musicGen = new MusicGen();
+    var lights = new Lights();
 
     function nextChord() {
         return musicGen.popNextChord();
