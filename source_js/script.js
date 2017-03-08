@@ -178,7 +178,7 @@ var physicsEngine = Physics(function (world) {
     });
     console.log(zero);
 
-    world.add(zero);
+    // world.add(zero);
 
     // add some gravity
     var gravity = Physics.behavior('constant-acceleration', {
@@ -228,7 +228,7 @@ var physicsEngine = Physics(function (world) {
     // subscribe to ticker to advance the simulation
     Physics.util.ticker.on(function (time) {
         world.step(time);
-        world.findOne({ 'treatment': 'kinematic' }).state.angular.vel = zero_ang_vel;
+        // world.findOne({ 'treatment': 'kinematic' }).state.angular.vel = zero_ang_vel;
 
         if (!laskTick) {
             laskTick = time;
