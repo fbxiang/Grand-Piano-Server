@@ -187,8 +187,6 @@ var physicsEngine = Physics(function (world) {
 
     // add things to the world
     world.add([
-        Physics.behavior('interactive', { el: renderer.container }),
-
         Physics.behavior('body-impulse-response', {check: 'collisions:desired'})
         , Physics.behavior('body-collision-detection')
         , Physics.behavior('sweep-prune')
