@@ -6,7 +6,7 @@ function GameModel(piano, world) {
         tempo = bpm;
     }
 
-    setTempo(200);
+    setTempo(240);
 
     var timeInBeat = 0;
 

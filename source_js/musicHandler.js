@@ -10,9 +10,6 @@ synth.def = function(opts) {
 };
 synth.play();
 
-
-
-
 var mml = "l2 g0<c0e> f0g0<d> e0g0<c1";
 
 var bass = T("OscGen", {wave:"sin(10)", env:{type:"adsr"}, mul:0.2}).play();
@@ -30,23 +27,20 @@ function MusicBox() {
     var currentCallback = null;
     // music playing logic
     this.playChord = function(chord, switchCallback) {
-        currentChord = chord;
-        currentCallback = switchCallback;
+        currentCallback = function() {
+            currentChord = chord;
+            switchCallback();
+        };
     };
 
     this.playMelody = function(melody) {
         melodyQueue = melodyQueue.concat(melody);
     };
 
-    this.playNote = function() {
-
-    };
-
     this.nextBeat = function() {
         beatCount++;
         if (melodyQueue.length > 0)
             synth.noteOn(melodyQueue.pop(), 80);
-        console.log(beatCount);
 
         if (beatCount % 4 == 0)
             this.onBeat4();
@@ -58,15 +52,18 @@ function MusicBox() {
 
     var beat4Listener = null;
     this.onBeat4 = function() {
+        // switch chord and call the switch callback
+        if (currentCallback && beatCount % 8 == 0) {
+            melodyQueue = [];
+            currentCallback();
+            currentCallback = null;
+        }
+
         if (!currentChord) return;
         bass.allNoteOff();
+
         currentChord.forEach(function(noteClass) {
             bass.noteOn(noteClass + 48, 60);
-            if (currentCallback && beatCount % 8 == 0) {
-                melodyQueue = [];
-                currentCallback();
-                currentCallback = null;
-            }
         });
 
         beat4Listener && beat4Listener();
@@ -74,7 +71,6 @@ function MusicBox() {
     };
 
     this.registerBeat4Listener = function(callback) {
-        console.log(callback);
         beat4Listener = callback;
     }
 }
