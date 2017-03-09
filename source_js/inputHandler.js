@@ -33,32 +33,9 @@ function InputHandler(Physics, Pizzicato, world, regularPolygon, width, height, 
             if (keyPressed in PitchClassMapping.keyboardCharToPitchClass) {
                 var map = PitchClassMapping.keyboardCharToPitchClass[keyPressed];
 
-                var midiNumber = baseOctave + parseInt(map["pitch"]);
-                var circle = Physics.body('circle', {
-                    x: width / 2
-                    , y: height / 2
-                    , mass: 1
-                    , radius: 10
-                    , styles: {
-                        fillStyle: map["color"]
-                    },
-                    note: midiNumber,
-                    vol: 1,
-                    opacity: 1,
-                    despawn: true
-                });
-
-                circle.note = midiNumber;
-                circle.life = BALL_LIFE;
-                // world.add(circle);
-
                 var pianoKey = parseInt(map["pitch"]);
-                piano.setKeysActive([pianoKey]);
 
-                gameModel.spawnProjectile(world, pianoKey);
-                if (instantFeedback) {
-                    synth.noteOn(midiNumber, 100);
-                }
+                gameModel.keyPressed(pianoKey);
             }
             if (keyPressed == "p") {
                 console.log(gameActive);
@@ -73,7 +50,7 @@ function InputHandler(Physics, Pizzicato, world, regularPolygon, width, height, 
             var keyPressed = String.fromCharCode(e.keyCode).toLowerCase();
             if (keyPressed in PitchClassMapping.keyboardCharToPitchClass) {
                 var map = PitchClassMapping.keyboardCharToPitchClass[keyPressed];
-                piano.setKeysNormal([parseInt(map["pitch"])]);
+                gameModel.keyUp(parseInt(map["pitch"]));
             }
 
             else if (e.keyCode == 187) { // = key
