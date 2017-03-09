@@ -14,6 +14,14 @@ function Lights() {
         this.sendMessage();
     };
 
+    this.setColor = function(color) {
+        red = parseInt(color.substring(1, 3), 16);
+        green = parseInt(color.substring(3, 5), 16);
+        blue = parseInt(color.substring(5, 7), 16);
+        console.log(red, green, blue);
+        this.sendMessage();
+    };
+
     this.getRGB = function() {
         var rgb = blue | (green << 8) | (red << 16);
         return rgb.toString(16);
