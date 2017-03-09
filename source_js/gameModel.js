@@ -58,6 +58,9 @@ function GameModel(piano, world) {
                 synth1.noteOn(baseOctave + pianoKey, 100);
             }
         }
+
+        // light up mapped floodlight
+        lights.lightenPressedKey(pianoKey);
     };
 
     this.keyUp = function(pianoKey) {
@@ -107,9 +110,6 @@ function GameModel(piano, world) {
                 var melody = nextMelody();
                 musicBox.playMelody(melody);
 
-                // pulse the lights
-                lights.pulse(timeInBeat);
-
                 for (var i = 0; i < 8; i++) {
                     var particle = Physics.body('rectangle', {
                         x: pos.x
@@ -149,7 +149,8 @@ function GameModel(piano, world) {
                         });
 
                         // new chord new light color
-                        lights.setColor(PitchClassMapping.pitchClassToColor[chordRoot]);
+                        // lights.setColor(PitchClassMapping.pitchClassToColor[chordRoot]);
+                        lights.setRandomRGB();
                     });
                 });
             }
