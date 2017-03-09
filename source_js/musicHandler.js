@@ -16,8 +16,6 @@ synth2.def = function(opts) {
 };
 synth2.play();
 
-
-
 var mml = "l2 g0<c0e> f0g0<d> e0g0<c1";
 
 var bass = T("OscGen", {wave:"sin(10)", env:{type:"adsr"}, mul:0.2}).play();
