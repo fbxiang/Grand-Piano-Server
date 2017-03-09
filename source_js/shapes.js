@@ -252,14 +252,15 @@ function Target(width, height, color) {
         ,collision: false
     });
 
-    body.state.angular.vel = 0.005;
+    // body.state.angular.vel = 0.005;
 
     this.body = body;
 
-    this.spawn = function(world, x, y) {
+    this.spawn = function(world, x, y, vel) {
         if (x) {
             body.state.pos.x = x;
             body.state.pos.y = y;
+            body.state.vel.y = vel;
         }
         world.add(body);
     }
