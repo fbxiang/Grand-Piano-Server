@@ -1,14 +1,22 @@
 
-// var env   = T("adsr", {a:0, d:1000, s:0, r:600});
-
 var env = T("perc", {r:1000});
-var synth = T("SynthDef", {mul:0.45, poly:4});
-synth.def = function(opts) {
+var synth1 = T("SynthDef", {mul:0.45, poly:4});
+synth1.def = function(opts) {
     var op1 = T("sin", {freq:opts.freq*6, fb:0.25, mul:0.4});
     var op2 = T("sin", {freq:opts.freq, phase:op1, mul:0.4});
     return env.clone().append(op2).on("ended", opts.doneAction).bang();
 };
-synth.play();
+synth1.play();
+
+var synth2 = T("SynthDef", {mul:0.2, poly:4});
+synth2.def = function(opts) {
+    var op1 = T("sin", {freq:opts.freq*6, fb:0.25, mul:0.4});
+    var op2 = T("sin", {freq:opts.freq, phase:op1, mul:0.4});
+    return env.clone().append(op2).on("ended", opts.doneAction).bang();
+};
+synth2.play();
+
+
 
 var mml = "l2 g0<c0e> f0g0<d> e0g0<c1";
 
@@ -40,7 +48,7 @@ function MusicBox() {
     this.nextBeat = function() {
         beatCount++;
         if (melodyQueue.length > 0)
-            synth.noteOn(melodyQueue.pop(), 80);
+            synth1.noteOn(melodyQueue.pop(), 80);
 
         if (beatCount % 4 == 0)
             this.onBeat4();
