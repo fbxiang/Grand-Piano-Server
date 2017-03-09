@@ -46,6 +46,34 @@ function GameModel(piano, world) {
         return true;
     }
 
+    this.keyPressed = function(pianoKey) {
+        const baseOctave = 60;
+        if (!currentChord || currentChord.indexOf(pianoKey % 12) < 0) {
+            piano.setKeysForbidden([pianoKey]);
+            this.spawnProjectile(world, pianoKey);
+            if (instantFeedback) {
+                synth2.noteOn(baseOctave + pianoKey, 100);
+            }
+        } else {
+            piano.setKeysActive([pianoKey]);
+            this.spawnProjectile(world, pianoKey);
+            if (instantFeedback) {
+                synth1.noteOn(baseOctave + pianoKey, 100);
+            }
+        }
+    };
+
+    this.keyUp = function(pianoKey) {
+        if (currentChord.indexOf(pianoKey) >= 0) {
+            piano.setKeysNotice2([pianoKey]);
+        }
+        else {
+            piano.setKeysNormal([pianoKey]);
+        }
+    };
+
+    var currentChord = null;
+
     function update(dt, world) {
         if (!gameActive)
             return;
@@ -102,13 +130,19 @@ function GameModel(piano, world) {
             }
 
             if (targetsEmpty() && !musicBox.waitingForChordToStart()) {
-                const chord = nextChord();
-                musicBox.playChord(chord, function() {
+                currentChord = nextChord();
+
+                // push the last annoying key in there
+                if (currentChord.indexOf(0) >= 0) {
+                    currentChord.push(12);
+                }
+
+                musicBox.playChord(currentChord, function() {
                     piano.setKeysNormal();
-                    piano.setKeysNotice(chord);
-                    chord.forEach(function(note) {
+                    piano.setKeysNotice(currentChord);
+                    currentChord.forEach(function(note) {
                         spawnTarget(world, note);
-                    })
+                    });
 
                     // new chord new light color
                     lights.setRandomRGB();
