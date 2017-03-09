@@ -16,7 +16,7 @@ function Lights() {
 
     this.getRGB = function() {
         var rgb = blue | (green << 8) | (red << 16);
-        return '#' + rgb.toString(16);
+        return rgb.toString(16);
     };
 
     this.setRandomRGB = function() {
@@ -38,6 +38,10 @@ function Lights() {
         }
         message += this.getRGB();
         console.log(message);
-        ws.send(message);
+
+        if(ws.readyState === ws.OPEN){
+           // Do your stuff...
+            ws.send(message);
+        }
     };
 }
