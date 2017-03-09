@@ -35,7 +35,7 @@ function GameModel(piano, world) {
 
     function spawnTarget(world, note) {
         var target = new Target(20, 30, PitchClassMapping.pitchClassToColor[note%12]);
-        target.spawn(world, piano.getKeyPosition(note).x, 100);
+        target.spawn(world, piano.getKeyPosition(note).x, 0, 0.05 + Math.random()/10);
         targets[note].push(target);
     }
 
@@ -88,8 +88,11 @@ function GameModel(piano, world) {
         }
 
         for (var i = 0; i < 13; i++) {
+
+            var targetHit = false;
+
             if (targets[i][0] && targets[i][0].body.state.pos.y > piano.y - piano.whiteKeyHeight/2) {
-                targets[i].shift().body.life = 0;
+                targetHit = true;
             }
             if (projectiles[i][0] && projectiles[i][0].body.state.pos.y < 0) {
                 projectiles[i].shift().body.life = 0;
@@ -97,6 +100,9 @@ function GameModel(piano, world) {
 
             if (projectiles[i][0] && targets[i][0] && targets[i][0].body.state.pos.y > projectiles[i][0].body.state.pos.y) {
                 projectiles[i].shift().body.life = 0;
+                targetHit = true;
+            }
+            if (targetHit) {
                 var targetBody = targets[i].shift().body;
                 targetBody.life = 0;
                 var pos = targetBody.state.pos;
