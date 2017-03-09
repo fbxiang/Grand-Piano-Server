@@ -14,8 +14,32 @@ var ChordToNotesMapping = {
     VII_flat: [2, 5, 10]
 };
 
+function chordToRootMapping(chordName) {
+    const chordToRootMapping = {
+        i: 0,
+        I: 0,
+        ii: 2,
+        II: 2,
+        iii: 4,
+        III: 4,
+        iv: 5,
+        IV: 5,
+        v: 7,
+        V: 7,
+        vi: 9,
+        VI: 9,
+        vii: 11,
+        VII: 11
+    };
+
+    var root = chordToRootMapping[chordName.split('_')[0]];
+    return root ? root : 0;
+}
+
+
+
 var repeatProgression = [
-     {chords: ['I', 'vi', 'IV', 'V'], repeat: true, next:['I', 'vi']}
+     {chords: ['I', 'vi', 'IV', 'V'], repeat: true, next:['I', 'vi']} //, keyChange: 1}
     ,{chords: ['I', 'V', 'vi', 'IV'], repeat: true, next:['I']}
     ,{chords: ['I', 'V', 'vi', 'iii', 'IV', 'I', 'ii', 'V'], repeat: true, next:['I']}
     ,{chords: ['vi', 'vi', 'II', 'II'], repeat: true, next:['vi', 'I']}
@@ -24,7 +48,6 @@ var repeatProgression = [
     ,{chords: ['vi', 'iii', 'IV', 'I', 'ii', 'vi', 'vii_dim', 'III'], repeat: true, next:['vi']}
     ,{chords: ['vi', 'ii', 'V', 'vi', 'V', 'vi', 'vi', 'ii', 'V', 'vi', 'IV', 'V', 'vi_sus4', 'vi', 'vii_dim', 'vi'], repeat: false, next:['vi']}
     ,{chords: ['vi', 'V', 'I', 'iii'], repeat: true, next:['vi']}
-    //// ,{chords: ['I', 'IV', 'iv', 'iii', 'VII_flat', 'iv', 'III', 'i'], repeat: true, next: ['I']}
 ];
 
 Array.prototype.randomOne = function() {
@@ -34,14 +57,10 @@ Array.prototype.randomOne = function() {
 function MusicGen() {
     var key = 0;
     var thisProgression;
-    var repeatTimes;
+    var repeatTimes = 0;
 
     var chordQueue = [];
     var currentChord = null;
-
-    function addKeyToNote(note) {
-        return (note + key) % 12;
-    }
 
     // helper function to randomly select chords
     function generateRandomProgression(firstChords, params) {
@@ -50,9 +69,10 @@ function MusicGen() {
         }).randomOne();
     }
 
-    // add more chords from the proper progrssion to the chord queue
+    // add more chords from the proper progression to the chord queue
     function generateNextProgression() {
         var newProgression = null;
+
         if (!thisProgression) {
             newProgression = generateRandomProgression()
         }
@@ -71,17 +91,24 @@ function MusicGen() {
             newProgression = generateRandomProgression(thisProgression.next)
         }
 
-        console.log('new progression appended:', newProgression);
-        chordQueue = chordQueue.concat(newProgression.chords);
-    }
+        console.log(repeatTimes);
 
+        key = key + ((thisProgression && thisProgression.keyChange) ? thisProgression.keyChange : 0);
+
+        console.log('new progression appended:', newProgression);
+        chordQueue = chordQueue.concat(newProgression.chords.map(function(chord) {return [chord, key]}));
+
+        thisProgression = newProgression;
+    }
 
     // have a look at the next chord
     this.peekNextChord = function() {
         if (chordQueue.length == 0) {
             generateNextProgression();
         }
-        return ChordToNotesMapping[chordQueue[0]].map(addKeyToNote);
+        return ChordToNotesMapping[chordQueue[0][0]].map(function(note) {
+            return (note + chordQueue[0][1]) % 12;
+        });
     };
 
     this.popNextChord = function() {
@@ -89,7 +116,9 @@ function MusicGen() {
             generateNextProgression();
         }
         currentChord = chordQueue.shift();
-        return ChordToNotesMapping[currentChord].map(addKeyToNote);
+        return ChordToNotesMapping[currentChord[0]].map(function(note) {
+            return (note + currentChord[1]) % 12;
+        });
     };
 
 
@@ -109,7 +138,9 @@ function MusicGen() {
     this.generateMelody = function(length, params) {
         (length) || (length = 8);
         var melody = [];
-        var notes = ChordToNotesMapping[currentChord].map(addKeyToNote);
+        var notes = ChordToNotesMapping[currentChord[0]].map(function(note) {
+            return (note + currentChord[1]) % 12;
+        });
         var allNotes = getNotesInRange(notes, 60, 84);
 
         var lastNote = null;
@@ -132,3 +163,13 @@ function MusicGen() {
         return melody;
     }
 }
+
+
+var melodyPatterns = [
+    ['c', 'c+', 'c+', 'c+'],
+    ['c', 'c-', 'c-', 'c-'],
+    ['c', 'c-', 'c+', 'c+'],
+    ['c', 'd+', 'c+', 'd+'],
+    ['c', 'd-', 'c-', 'd+'],
+    ['c', 'cj', 'd-', 'c-']
+];
