@@ -46,7 +46,7 @@ function MusicBox() {
     this.nextBeat = function() {
         beatCount++;
         if (melodyQueue.length > 0)
-            synth1.noteOn(melodyQueue.pop(), 80);
+            synth1.noteOn(melodyQueue.shift(), 80);
 
         if (beatCount % 4 == 0)
             this.onBeat4();
