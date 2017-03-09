@@ -111,7 +111,7 @@ function GameModel(piano, world) {
                 musicBox.playMelody(melody);
 
                 // pulse the lights
-                lights.pulse();
+                lights.pulse(timeInBeat);
 
                 for (var i = 0; i < 8; i++) {
                     var particle = Physics.body('rectangle', {
