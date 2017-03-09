@@ -59,6 +59,7 @@ function MusicGen() {
     var thisProgression;
     var repeatTimes = 0;
 
+    // chord queue stores chords in the format [[0,4,7], 2] where [0,4,7] is the chord notes and 2 is the key (D)
     var chordQueue = [];
     var currentChord = null;
 
@@ -111,14 +112,19 @@ function MusicGen() {
         });
     };
 
-    this.popNextChord = function() {
+    this.popNextChord = function(callback) {
         if (chordQueue.length == 0) {
             generateNextProgression();
         }
         currentChord = chordQueue.shift();
-        return ChordToNotesMapping[currentChord[0]].map(function(note) {
+
+        var chord = ChordToNotesMapping[currentChord[0]].map(function(note) {
             return (note + currentChord[1]) % 12;
         });
+
+        var chordRoot = chordToRootMapping(currentChord[0]);
+        callback(chord, chordRoot);
+        return chord;
     };
 
 

@@ -16,9 +16,6 @@ function GameModel(piano, world) {
     var musicGen = new MusicGen();
     var lights = new Lights();
 
-    function nextChord() {
-        return musicGen.popNextChord();
-    }
 
     function nextMelody() {
         return musicGen.generateMelody();
@@ -136,22 +133,24 @@ function GameModel(piano, world) {
             }
 
             if (targetsEmpty() && !musicBox.waitingForChordToStart()) {
-                currentChord = nextChord();
+                musicGen.popNextChord(function(chord, chordRoot) {
+                    currentChord = chord;
 
-                // push the last annoying key in there
-                if (currentChord.indexOf(0) >= 0) {
-                    currentChord.push(12);
-                }
+                    // push the last annoying key in there
+                    if (currentChord.indexOf(0) >= 0) {
+                        currentChord.push(12);
+                    }
 
-                musicBox.playChord(currentChord, function() {
-                    piano.setKeysNormal();
-                    piano.setKeysNotice(currentChord);
-                    currentChord.forEach(function(note) {
-                        spawnTarget(world, note);
+                    musicBox.playChord(currentChord, function() {
+                        piano.setKeysNormal();
+                        piano.setKeysNotice(currentChord);
+                        currentChord.forEach(function(note) {
+                            spawnTarget(world, note);
+                        });
+
+                        // new chord new light color
+                        lights.setColor(PitchClassMapping.pitchClassToColor[chordRoot]);
                     });
-
-                    // new chord new light color
-                    lights.setRandomRGB();
                 });
             }
 
