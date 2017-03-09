@@ -8,7 +8,15 @@ var BALL_LIFE = 10000;
 var gameActive = true;
 var instantFeedback = true;
 
+
 var physicsEngine = Physics(function (world) {
+    var piano = new Piano();
+
+    piano.setDimension(S(200), S(100));
+    piano.setPosition(width / 2, height - 150);
+
+    var gameModel = new GameModel(piano, world);
+    var input = new InputHandler(gameModel);
 
     // bounds of the window
     var viewportBounds = Physics.aabb(0, 0, window.innerWidth, window.innerHeight)
@@ -58,12 +66,10 @@ var physicsEngine = Physics(function (world) {
         if (velocity > 0) {
             switch(type) {
                 case 144: //noteon
-                    var color = '#' + PitchClassMapping.pitchClassToColor[data[1]%12];
-                    console.log(color);
-                    spawnCircle(width/2, height/2, 10, color, data[1]);
+                    input.midikeydown(note % 13);
                     break;
                 case 128:
-                    console.log('note off');
+                    input.midikeyup(note % 13);
                     break;
                 default:
                     break
@@ -71,12 +77,6 @@ var physicsEngine = Physics(function (world) {
         }
     }
 
-    var piano = new Piano();
-
-    piano.setDimension(S(200), S(100));
-    piano.setPosition(width / 2, height - 150);
-
-    var gameModel = new GameModel(piano, world);
 
     ///////////////////////////////////////////////////PHYSICS////////////////////////////////////////////////////////////
     // Plz give me a number > 3
@@ -132,7 +132,6 @@ var physicsEngine = Physics(function (world) {
         return n * window.innerWidth / 600;
     }
 
-    var input = new InputHandler(Physics, Pizzicato, world, regularPolygon, width, height, piano, gameModel);
     // some fun colors
     var colors = {
         blue: '0x1d6b98',
@@ -188,8 +187,6 @@ var physicsEngine = Physics(function (world) {
 
     // add things to the world
     world.add([
-        Physics.behavior('interactive', { el: renderer.container }),
-
         Physics.behavior('body-impulse-response', {check: 'collisions:desired'})
         , Physics.behavior('body-collision-detection')
         , Physics.behavior('sweep-prune')
