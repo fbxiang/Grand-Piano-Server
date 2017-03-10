@@ -44,7 +44,7 @@ function GameModel(piano, world) {
     }
 
     this.keyPressed = function(pianoKey) {
-        const baseOctave = 48;
+        const baseOctave = 60;
         if (!currentChord || currentChord.indexOf(pianoKey % 12) < 0) {
             piano.setKeysForbidden([pianoKey]);
             this.spawnProjectile(world, pianoKey);

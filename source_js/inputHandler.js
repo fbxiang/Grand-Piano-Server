@@ -38,7 +38,9 @@ function InputHandler(gameModel) {
 
 
     this.midikeydown = function(pitch) {
-        gameModel.keyPressed(pitch);
+        if (pitch >= 0 && pitch <= 12) {
+            gameModel.keyPressed(pitch);
+        }
     };
 
     this.onkeyup = function (e) {
@@ -51,7 +53,9 @@ function InputHandler(gameModel) {
     window.onkeyup = this.onkeyup;
 
     this.midikeyup = function(pitch) {
-        gameModel.keyUp(pitch);
+        if (pitch >= 0 && pitch <= 12) {
+            gameModel.keyUp(pitch);
+        }
     }
 
 }
