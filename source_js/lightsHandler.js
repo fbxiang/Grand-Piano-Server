@@ -42,7 +42,9 @@ function Lights() {
 
     this.lightenPressedKey = function(pianokey) {
         var light_num = 1 + Math.floor(pianokey / NUM_PIANO_KEYS * working_lights.length);
-        var newColor = shadeBlendConvert(-0.3, '#' + light_colors[light_num]); // make new color 50% lighter
+
+        var inverseColor = ('000000' + (('0xffffff' ^ ('0x'+this.getRGB())).toString(16))).slice(-6);
+        var newColor = shadeBlendConvert(-1, '#' + light_colors[light_num], '#' + inverseColor.substring(2)); // make new color 50% lighter
         light_colors[light_num] = newColor.substring(1);
         console.log(light_colors);
         this.sendMessage();

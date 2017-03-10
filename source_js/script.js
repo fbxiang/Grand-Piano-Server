@@ -66,14 +66,19 @@ var physicsEngine = Physics(function (world) {
         if (velocity > 0) {
             switch(type) {
                 case 144: //noteon
-                    input.midikeydown(note % 13);
+                    // janky because all the handlers expect 0-12 for 13 notes
+                    // since we have low and high C
+                    input.midikeydown(note - 60);
                     break;
                 case 128:
-                    input.midikeyup(note % 13);
+                    input.midikeyup(note - 60);
                     break;
                 default:
                     break
             }    
+        }
+        if (velocity == 0) {
+            input.midikeyup(note - 60);
         }
     }
 
