@@ -33,7 +33,7 @@ function Lights() {
     };
 
     this.setRandomRGB = function() {
-        red = Math.random() * 255;
+        red = Math.random() * 150;
         green = Math.random() * 255;
         blue = Math.random() * 255;
         this.setAllLights();
@@ -44,9 +44,15 @@ function Lights() {
         var light_num = 1 + Math.floor(pianokey / NUM_PIANO_KEYS * working_lights.length);
 
         var inverseColor = ('000000' + (('0xffffff' ^ ('0x'+this.getRGB())).toString(16))).slice(-6);
-        var newColor = shadeBlendConvert(-1, '#' + light_colors[light_num], '#' + inverseColor.substring(2)); // make new color 50% lighter
-        light_colors[light_num] = newColor.substring(1);
-        console.log(light_colors);
+        // var newColor = shadeBlendConvert(-1, '#' + light_colors[light_num], '#' + inverseColor.substring(2)); // make new color 50% lighter
+        // light_colors[light_num] = newColor.substring(1);
+        try {
+            light_colors[light_num] = inverseColor.substring(2);
+        }
+        catch(err) {
+            light_colors[light_num] = this.getRGB();
+            console.log('error with changing color of light');
+        }
         this.sendMessage();
     };
 
@@ -62,7 +68,7 @@ function Lights() {
             message += light_colors[i] + ', ';
         }
         message += light_colors[NUM_LIGHTS - 1];
-        console.log(message);
+        // console.log(message);
 
         if(ws.readyState === ws.OPEN){
             ws.send(message);
