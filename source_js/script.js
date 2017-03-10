@@ -56,11 +56,11 @@ var physicsEngine = Physics(function (world) {
 
     function onMIDIMessage(message) {
         data = message.data; // this gives us our [command/channel, note, velocity] data.
-        console.log(data);
+        // console.log(data);
         var channel = data[0] & 0xf;
         var type = data[0] & 0xf0;
-        console.log('channel:' + channel);
-        console.log('type:' + type);
+        // console.log('channel:' + channel);
+        // console.log('type:' + type);
         var note = data[1];
         var velocity = data[2];
         if (velocity > 0) {
@@ -180,7 +180,7 @@ var physicsEngine = Physics(function (world) {
         }
         ,children: regularPolygon(6, 60)
     });
-    console.log(zero);
+    // console.log(zero);
 
     // world.add(zero);
 
