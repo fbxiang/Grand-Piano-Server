@@ -52,6 +52,7 @@ function InputHandler(gameModel) {
     window.onkeyup = this.onkeyup;
 
     this.midikeyup = function(pitch) {
+        console.log('keyup~');
         gameModel.keyUp(pitch);
     }
 
