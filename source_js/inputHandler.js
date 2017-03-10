@@ -38,8 +38,7 @@ function InputHandler(gameModel) {
 
 
     this.midikeydown = function(pitch) {
-        var pianoKey = pitch;
-        gameModel.keyPressed(pianoKey);
+        gameModel.keyPressed(pitch);
     };
 
     this.onkeyup = function (e) {
@@ -52,7 +51,6 @@ function InputHandler(gameModel) {
     window.onkeyup = this.onkeyup;
 
     this.midikeyup = function(pitch) {
-        console.log('keyup~');
         gameModel.keyUp(pitch);
     }
 
