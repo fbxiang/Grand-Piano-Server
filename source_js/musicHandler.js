@@ -24,6 +24,22 @@ var bassEffect = T('chorus', {rate:4, fb: 0.5, mix: 0.25}, bass);
 bassEffect = T("reverb", {room:0.95, damp:0.1, mix:0.75}, bassEffect);
 bassEffect.play();
 
+var bassLoud = T("OscGen", {wave:"sin(10)", env:{type:"adsr"}, mul:0.25}).play();
+
+var bassEffectLoud = T('chorus', {rate:4, fb: 0.5, mix: 0.25}, bassLoud);
+bassEffectLoud = T("reverb", {room:0.95, damp:0.1, mix:0.75}, bassEffectLoud);
+bassEffectLoud.play();
+
+
+
+var chordPatterns = [
+    [2,0,1,0,2,0,1,0,2,0,1,0,2,1,1,1],
+    [2,0,0,0,2,0,0,0,2,0,1,0,2,0,1,0],
+    [2,0,0,1,2,0,1,0,2,0,1,0,2,1,1,1],
+    [2,1,0,1,2,1,0,1,2,1,0,1,2,1,0,1]
+];
+
+
 function MusicBox() {
     var beatCount = -1;
 
@@ -43,6 +59,34 @@ function MusicBox() {
         melodyQueue = melodyQueue.concat(melody);
     };
 
+    function stopChordSound() {
+        bass.allNoteOff();
+        bassLoud.allNoteOff();
+    }
+
+    var currentChordPattern = null;
+    function playChordSound(beat) {
+        if (beat % 16 == 0) currentChordPattern = chordPatterns.randomOne();
+        stopChordSound();
+        if (!currentChord) return;
+
+        switch (currentChordPattern[beat % 16]) {
+            case 1:
+                currentChord.forEach(function(noteClass) {
+                    if (Math.random() < 0.4)
+                        bass.noteOn(noteClass + 48, 60);
+                });
+                break;
+            case 2:
+                currentChord.forEach(function(noteClass) {
+                    bassLoud.noteOn(noteClass + 48, 60);
+                });
+                break;
+            default:
+
+        }
+    }
+
     this.nextBeat = function() {
         beatCount++;
         if (melodyQueue.length > 0)
@@ -50,6 +94,8 @@ function MusicBox() {
 
         if (beatCount % 4 == 0)
             this.onBeat4();
+
+        playChordSound(beatCount);
     };
 
     this.waitingForChordToStart = function() {
@@ -64,13 +110,6 @@ function MusicBox() {
             currentCallback();
             currentCallback = null;
         }
-
-        if (!currentChord) return;
-        bass.allNoteOff();
-
-        currentChord.forEach(function(noteClass) {
-            bass.noteOn(noteClass + 48, 60);
-        });
 
         beat4Listener && beat4Listener();
 
