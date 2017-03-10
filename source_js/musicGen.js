@@ -271,7 +271,6 @@ function MusicGen() {
         return generateRandomRepeatProgression(firstChords, params);
     }
 
-
     // add more chords from the proper progression to the chord queue
     function generateNextProgression() {
         var newProgression = null;
@@ -286,6 +285,7 @@ function MusicGen() {
             }
             else {
                 repeatTimes += 1;
+                progressionsSinceLastModulation += 1;
                 newProgression = thisProgression;
             }
         }
