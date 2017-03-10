@@ -10,6 +10,7 @@ var ChordToNotesMapping = {
     V: [2, 7, 11],
     vi_sus4: [2, 4, 9],
     vi: [0, 4, 9],
+    VI: [1, 4, 9],
     vii_dim: [2, 5, 11],
     VII_flat: [2, 5, 10]
 };
@@ -48,6 +49,7 @@ var chordToMelodyNotesMapping = {
     V: {c: [2, 7, 11], d: [0, 4, 9], t:[]},
     vi_sus4: {c: [2, 4, 9], d: [0, 5, 7], t:[11]},
     vi: {c: [0, 4, 9], d: [2, 7], t:[11]},
+    VI: {c: [1, 4, 9], d: [2, 7], t:[11]},
     vii_dim: {c: [2, 5, 11], d: [0, 4, 9], t:[]},
     VII_flat: {c: [2, 5, 10], d: [6], t:[]}
 };
@@ -66,7 +68,9 @@ function getNotesInRange(notes, low, high) {
 }
 
 var repeatProgression = [
-     {chords: ['I', 'vi', 'IV', 'V'], repeat: true, next:['I', 'vi']} //, keyChange: 1}
+    {chords: ['I', 'vi', 'IV', 'V'], repeat: true, next:['I', 'vi']} //, keyChange: 1}
+    ,{chords: ['I', 'IV', 'vi', 'IV', 'V'], repeat: true, next: ['I']}
+    ,{chords: ['vi', 'V', 'IV', 'III'], repeat: true, next: ['vi']}
     ,{chords: ['I', 'V', 'vi', 'IV'], repeat: true, next:['I']}
     ,{chords: ['I', 'V', 'vi', 'iii', 'IV', 'I', 'ii', 'V'], repeat: true, next:['I']}
     ,{chords: ['vi', 'vi', 'II', 'II'], repeat: true, next:['vi', 'I']}
@@ -75,6 +79,11 @@ var repeatProgression = [
     ,{chords: ['vi', 'iii', 'IV', 'I', 'ii', 'vi', 'vii_dim', 'III'], repeat: true, next:['vi']}
     ,{chords: ['vi', 'ii', 'V', 'vi', 'V', 'vi', 'vi', 'ii', 'V', 'vi', 'IV', 'V', 'vi_sus4', 'vi', 'vii_dim', 'vi'], repeat: false, next:['vi']}
     ,{chords: ['vi', 'V', 'I', 'iii'], repeat: true, next:['vi']}
+];
+
+var modulationProgression = [
+     {chords: ['vi', 'ii', 'iii', 'vi_sus4'], repeat: false, next: ['I'], keyChange: 9}
+    ,{chords: ['I', 'VI', 'II'], repeat: true, next: ['I'], keyChange: 7}
 ];
 
 Array.prototype.randomOne = function() {
@@ -230,12 +239,38 @@ function MusicGen() {
     var chordQueue = [];
     var currentChord = null;
 
+    var progressionsSinceLastModulation = 0;
     // helper function to randomly select chords
-    function generateRandomProgression(firstChords, params) {
+    function generateRandomRepeatProgression(firstChords, params) {
+        progressionsSinceLastModulation += 1;
         return repeatProgression.filter(function(p) {
-            return (!firstChords) || firstChords.indexOf(p.chords[0] >= 0);
+            return (!firstChords) || firstChords.includes(p.chords[0]);
         }).randomOne();
     }
+
+    function generateRandomModulation(firstChords, params) {
+        console.log('try to modulate');
+        var progression = modulationProgression.filter(function(p) {
+            return (!firstChords) || firstChords.includes(p.chords[0]);
+        }).randomOne();
+
+        if (progression != null)
+            progressionsSinceLastModulation = 0;
+        else {
+            console.log('modulation failed');
+        }
+        return progression;
+    }
+
+    function generateRandomProgression(firstChords, params) {
+        if (Math.random() < (progressionsSinceLastModulation - 3) / 6 ) {
+            var output = generateRandomModulation(firstChords, params);
+            if (output == null) output = generateRandomRepeatProgression(firstChords, params);
+            return output;
+        }
+        return generateRandomRepeatProgression(firstChords, params);
+    }
+
 
     // add more chords from the proper progression to the chord queue
     function generateNextProgression() {
@@ -245,7 +280,7 @@ function MusicGen() {
             newProgression = generateRandomProgression()
         }
         else if (thisProgression.repeat) {
-            if (repeatTimes >= 4 || (repeatTimes == 2 && Math.random() < 0.5)) {
+            if (repeatTimes >= 2 || Math.random() < 0.3 ) {
                 repeatTimes = 0;
                 newProgression = generateRandomProgression(thisProgression.next)
             }
@@ -259,9 +294,8 @@ function MusicGen() {
             newProgression = generateRandomProgression(thisProgression.next)
         }
 
-        console.log(repeatTimes);
-
         key = key + ((thisProgression && thisProgression.keyChange) ? thisProgression.keyChange : 0);
+        console.log('change to', key);
 
         console.log('new progression appended:', newProgression);
         chordQueue = chordQueue.concat(newProgression.chords.map(function(chord) {return [chord, key]}));
@@ -270,14 +304,14 @@ function MusicGen() {
     }
 
     // have a look at the next chord
-    this.peekNextChord = function() {
-        if (chordQueue.length == 0) {
-            generateNextProgression();
-        }
-        return ChordToNotesMapping[chordQueue[0][0]].map(function(note) {
-            return (note + chordQueue[0][1]) % 12;
-        });
-    };
+    // this.peekNextChord = function() {
+    //     if (chordQueue.length == 0) {
+    //         generateNextProgression();
+    //     }
+    //     return ChordToNotesMapping[chordQueue[0][0]].map(function(note) {
+    //         return (note + chordQueue[0][1]) % 12;
+    //     });
+    // };
 
     this.popNextChord = function(callback) {
         if (chordQueue.length == 0) {
