@@ -57,10 +57,10 @@ function GameModel(piano, world) {
             if (instantFeedback) {
                 synth1.noteOn(baseOctave + pianoKey, 100);
             }
-        }
 
-        // light up mapped floodlight
-        lights.lightenPressedKey(pianoKey);
+            // light up mapped floodlight if in chord
+            lights.lightenPressedKey(pianoKey);
+        }
     };
 
     this.keyUp = function(pianoKey) {
