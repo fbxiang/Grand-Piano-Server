@@ -22,7 +22,7 @@ function Lights() {
         red = parseInt(color.substring(1, 3), 16);
         green = parseInt(color.substring(3, 5), 16);
         blue = parseInt(color.substring(5, 7), 16);
-        // console.log(red, green, blue);
+        // // console.log(red, green, blue);
         this.setAllLights();
         this.sendMessage();
     };
@@ -51,7 +51,7 @@ function Lights() {
         }
         catch(err) {
             light_colors[light_num] = this.getRGB();
-            console.log('error with changing color of light');
+            // console.log('error with changing color of light');
         }
         this.sendMessage();
     };
@@ -68,7 +68,7 @@ function Lights() {
             message += light_colors[i] + ', ';
         }
         message += light_colors[NUM_LIGHTS - 1];
-        // console.log(message);
+        // // console.log(message);
 
         if(ws.readyState === ws.OPEN){
             ws.send(message);
