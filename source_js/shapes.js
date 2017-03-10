@@ -30,7 +30,7 @@ function Piano() {
     };
 
     function isBlack(key) {
-        return [1,3,6,8,10].indexOf(key) >= 0;
+        return [1,3,6,8,10].includes(key);
     }
 
     this.getKeyPosition = function(key) {
@@ -84,7 +84,7 @@ function Piano() {
         keys.forEach(function(key) {
             var idx = keyMap[key];
 
-            if ([1,3,6,8,10].indexOf(key) >= 0) {
+            if (isBlack(key)) {
                 // black key
                 that.blackKeyBodies[idx].styles={fillStyle:'#000', lineWidth: 1, strokeStyle: '#000'};
                 that.blackKeyBodies[idx].view = null;
