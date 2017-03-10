@@ -83,7 +83,7 @@ var repeatProgression = [
 
 var modulationProgression = [
      {chords: ['vi', 'ii', 'iii', 'vi_sus4'], repeat: false, next: ['I'], keyChange: 9}
-//     ,{chords: ['I', 'VI', 'II'], repeat: true, next: ['I'], keyChange: 7}
+     ,{chords: ['I', 'VI', 'II'], repeat: true, next: ['I'], keyChange: 7}
 ];
 
 Array.prototype.randomOne = function() {
@@ -231,7 +231,7 @@ function generateMelodyBasedOnPatterns(consonants, dissonants, transitions, last
 
 
 function MusicGen() {
-    var key = 0;
+    var key = 1;
     var thisProgression;
     var repeatTimes = 0;
 

@@ -149,8 +149,13 @@ function GameModel(piano, world) {
                         currentChord.push(12);
                     }
 
+                    var disabledNotes = [1];
                     musicBox.playChord(currentChord, function() {
                         piano.setKeysNormal();
+
+                        currentChord = currentChord.filter(function(c) {
+                            return !disabledNotes.includes(c)
+                        });
                         piano.setKeysNotice(currentChord);
                         currentChord.forEach(function(note) {
                             spawnTarget(world, note);
