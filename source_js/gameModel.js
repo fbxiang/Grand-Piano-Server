@@ -43,7 +43,11 @@ function GameModel(piano, world) {
         return true;
     }
 
+    var pianoKeyCoolDown = {};
+    const coolDownTime = 500;
     this.keyPressed = function(pianoKey) {
+        if (pianoKeyCoolDown[pianoKey] && pianoKeyCoolDown[pianoKey] > 0) return;
+        pianoKeyCoolDown[pianoKey] = coolDownTime;
         const baseOctave = 60;
         if (!currentChord || currentChord.indexOf(pianoKey % 12) < 0) {
             piano.setKeysForbidden([pianoKey]);
@@ -78,6 +82,10 @@ function GameModel(piano, world) {
         if (!gameActive)
             return;
         timeInBeat += dt;
+        for (var key in pianoKeyCoolDown) {
+            pianoKeyCoolDown[key] -= dt;
+            if (pianoKeyCoolDown < -100) pianoKeyCoolDown = -100;
+        }
 
         if (Math.random() < 0.5) {
             var color;
