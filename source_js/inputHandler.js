@@ -8,7 +8,7 @@
 
 function InputHandler(gameModel) {
 
-    var baseOctave = 60;
+    var baseOctave = 48;
     var heldNotes = [];
 
     function receiveInput(midiNumber, vol) {
@@ -27,7 +27,7 @@ function InputHandler(gameModel) {
             gameModel.keyPressed(pianoKey);
         }
         if (keyPressed == "p") {
-            console.log(gameActive);
+            // console.log(gameActive);
             gameActive = !gameActive;
         }
         if (keyPressed == "m") {

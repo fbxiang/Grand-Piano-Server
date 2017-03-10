@@ -56,29 +56,31 @@ var physicsEngine = Physics(function (world) {
 
     function onMIDIMessage(message) {
         data = message.data; // this gives us our [command/channel, note, velocity] data.
-        // // console.log(data);
+        // console.log(message);
         var channel = data[0] & 0xf;
         var type = data[0] & 0xf0;
         // // console.log('channel:' + channel);
         // // console.log('type:' + type);
         var note = data[1];
+        // console.log(note);
         var velocity = data[2];
         if (velocity > 0) {
             switch(type) {
                 case 144: //noteon
                     // janky because all the handlers expect 0-12 for 13 notes
                     // since we have low and high C
-                    input.midikeydown(note - 60);
+                    input.midikeydown(note - 48);
+                    // console.log('???');
                     break;
                 case 128:
-                    input.midikeyup(note - 60);
+                    input.midikeyup(note - 48);
                     break;
                 default:
                     break
             }    
         }
         if (velocity == 0) {
-            input.midikeyup(note - 60);
+            input.midikeyup(note - 48);
         }
     }
 
@@ -168,21 +170,6 @@ var physicsEngine = Physics(function (world) {
 
     }, true);
 
-    // create the zero, spinning regular polygon
-    var zero = Physics.body('compound', {
-        x: width / 2
-        , y: height / 2
-        , treatment: 'kinematic'
-        , styles: {
-            fillStyle: '#ffffff'
-            , lineWidth: 1
-            , strokeStyle: '#ffffff'
-        }
-        ,children: regularPolygon(6, 60)
-    });
-    // // console.log(zero);
-
-    // world.add(zero);
 
     // add some gravity
     var gravity = Physics.behavior('constant-acceleration', {
