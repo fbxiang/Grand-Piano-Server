@@ -149,7 +149,7 @@ function GameModel(piano, world) {
                         currentChord.push(12);
                     }
 
-                    var disabledNotes = [1];
+                    var disabledNotes = [1,5];
                     musicBox.playChord(currentChord, function() {
                         piano.setKeysNormal();
 
