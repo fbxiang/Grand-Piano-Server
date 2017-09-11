@@ -149,12 +149,14 @@ function GameModel(piano, world) {
                         currentChord.push(12);
                     }
 
-                    var disabledNotes = [1,5];
+                    // these notes are disabled due to hardware failures
+                    // var disabledNotes = [1,5];
+                    var disabledNotes = [];
                     musicBox.playChord(currentChord, function() {
                         piano.setKeysNormal();
 
                         currentChord = currentChord.filter(function(c) {
-                            return !disabledNotes.includes(c)
+                            return !disabledNotes.includes(c);
                         });
                         piano.setKeysNotice(currentChord);
                         currentChord.forEach(function(note) {
